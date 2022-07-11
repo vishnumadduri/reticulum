@@ -2,7 +2,7 @@ use Mix.Config
 
 # NOTE: this file contains some security keys/certs that are *not* secrets, and are only used for local development purposes.
 
-host = "hubs.local"
+host = "localhost"
 cors_proxy_host = "hubs-proxy.local"
 assets_host = "hubs-assets.local"
 link_host = "hubs-link.local"
@@ -10,7 +10,9 @@ link_host = "hubs-link.local"
 # To run reticulum across a LAN for local testing, uncomment and change the line below to the LAN IP
 # host = cors_proxy_host = "192.168.1.27"
 
-dev_janus_host = "dev-janus.reticulum.io"
+#dev_janus_host = "dev-janus.reticulum.io"
+dev_janus_host = "localhost"
+
 
 # For development, we disable any cache and enable
 # debugging and code reloading.
@@ -25,8 +27,8 @@ config :ret, RetWeb.Endpoint,
     port: 4000,
     otp_app: :ret,
     cipher_suite: :strong,
-    keyfile: "#{File.cwd!()}/priv/dev-ssl.key",
-    certfile: "#{File.cwd!()}/priv/dev-ssl.cert"
+    keyfile: "#{File.cwd!()}/priv/cert/key.pem",
+    certfile: "#{File.cwd!()}/priv/cert/cert.pem"
   ],
   cors_proxy_url: [scheme: "https", host: cors_proxy_host, port: 4000],
   assets_url: [scheme: "https", host: assets_host, port: 4000],
@@ -160,7 +162,7 @@ asset_hosts =
 websocket_hosts =
   "https://localhost:4000 https://localhost:8080 wss://localhost:4000 " <>
     "https://#{host}:4000 https://#{host}:8080 wss://#{host}:4000 wss://#{host}:8080 wss://#{host}:8989 wss://#{host}:9090 " <>
-    "wss://#{host}:4000 wss://#{host}:8080 https://#{host}:8080 https://hubs.local:8080 wss://hubs.local:8080"
+    "wss://#{host}:4000 wss://#{host}:8080 https://#{host}:8080 https://localhost:8080 wss://localhost:8080"
 
 config :ret, RetWeb.Plugs.AddCSP,
   script_src: asset_hosts,
@@ -176,7 +178,9 @@ config :ret, Ret.Mailer, adapter: Bamboo.LocalAdapter
 
 config :ret, RetWeb.Email, from: "info@hubs-mail.com"
 
-config :ret, Ret.PermsToken, perms_key: (System.get_env("PERMS_KEY") || "") |> String.replace("\\n", "\n")
+#config :ret, Ret.PermsToken, perms_key: (System.get_env("PERMS_KEY") || "") |> String.replace("\\n", "\n")
+config :ret, Ret.PermsToken, perms_key: "-----BEGIN RSA PRIVATE KEY-----\nMIICXAIBAAKBgQCLUtNmhV9B4W8Z0tFHhOXVO2LW5TRRFr6dZnK4DUE4mh1HS096\nxMq5FdQItVyXrnyF3ObaWmyrhlaK5c5Wh7KPjuL0Ya6pMcbhRjMLInEUbSRhF4d6\n5ghufaMYzzni+XXhym8c2oZLYCbHlZ/OVRhf03oX/FId7oz2kjoRjfRszQIDAQAB\nAoGAYcTfwOP7MtomAvMkFZI3Tul7tN3nVrglT4NjIbF7gWL1BODeh4Kt2DBvOSU8\nMt0pWS7peXVXKQ7+kD4wDBzxui80M6M+0Sq2dKxxHmD7kCkmAv0OinDqun4avigq\n0k6U2I0ngY0a1D0f9mRY+yPeXYZFefmPxH+ief3o6aqeKQECQQC+Do9abeGan6EJ\nNM0la1fathJY9c5H/IhglVHcHF4RDmxnboeJfmazZa66NJIxQ4KdmXkJewKqDUcT\nivzQ7rMhAkEAu6n5SaK/GUPdpASJ7M1afNIw2MRrrrSy0d3krjKOwKogfNGtNyI5\n4s2c9TTA6rNQJHt6P7mmDZYK2VKUmhDwLQJBAJTMdXPJP659d+jrTAoV5qy3i9nW\naPB3SJbFkVeRZhxYfIrmQHtnWSTvYUMr0aF8R5D4DYlco5Nb3d/xG0rA98ECQGuG\nzdaaUKK6VxG2pAyx8UoZ6XEawpR85wUG/hOt1kugbzL1tSklDEPfCjMZgfw4uA/f\nTEGdLv8T3K1++rR4RhUCQH/2v4K+eeIeAnVKBkUu6af1Rnd6qBOUZZ5s/BcHkphh\ntS0os62Vbtv/0mAs1dxTD4pxwl6AFZhc+EgNi9wcIH0=\n-----END RSA PRIVATE KEY-----"
+
 
 config :ret, Ret.OAuthToken, oauth_token_key: ""
 
@@ -202,7 +206,10 @@ config :sentry,
 
 config :ret, Ret.Habitat, ip: "127.0.0.1", http_port: 9631
 
-config :ret, Ret.JanusLoadStatus, default_janus_host: dev_janus_host, janus_port: 443
+#config :ret, Ret.JanusLoadStatus, default_janus_host: dev_janus_host, janus_port: 443
+config :ret, Ret.JanusLoadStatus, default_janus_host: dev_janus_host, janus_port: 4443
+
+
 
 config :ret, Ret.RoomAssigner, balancer_weights: [{600, 1}, {300, 50}, {0, 500}]
 
